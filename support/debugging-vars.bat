@@ -1,10 +1,10 @@
 @echo off
-IF NOT "%1" == "" (
-set SESSION_DATE_TIME_STRING=%~1
-)
 IF NOT DEFINED SESSION_DATE_TIME_STRING (
-call %DATE_TIME_SUFFIX_VARS_BAT%
-set SESSION_DATE_TIME_STRING=%date_time_suffix%
+set now_time=%time::=_%
+set now_time=%now_time:.=_%
+set now_time=%now_time: =0%
+
+set SESSION_DATE_TIME_STRING=%date:~10,4%_%date:~4,2%_%date:~7,2%.%now_time%
 )
 
 set debug_log_dir=%LOCALAPPDATA%\logs\debug\session_%SESSION_DATE_TIME_STRING%
