@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DebugPopMessageBox</Title>
+			<Description>MessageBox() allowing you to attach and debug</Description>
+			<Shortcut>DebugPrompt</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>			
+		</Header>
+		<Snippet>
+			<Code Language="CSharp">
+			<![CDATA[#if DEBUG //pasted from vs-debug-output.snippet
+				{
+					// Insert C# code snippet "DebugFunctions" (vs-debug-functions.snippet) once at top of any file used in this assembly
+					// It defines Namespace"Vs.Debug.Code" and class "SnippetFunctions" of static methods: getFilenameLineFunctionForCaller, isVesApp, getCallStack, OutputDebugString, ImosMessageBox
+					(string File, int Line, string Function) codeContext = Vs.Debug.Code.SnippetFunctions.getFilenameLineFunctionForCaller();
+					var _message = new System.Text.StringBuilder();
+
+					_message.Append("DEBUG_OUTPUT>");
+					_message.Append(DateTime.Now.ToString("HH:mm:ss.mmm"));
+					_message.Append(" ");
+					_message.Append(codeContext.File);
+					_message.Append(":");
+					_message.Append(codeContext.Line);
+					_message.Append("|");
+					_message.Append(codeContext.Function);
+					_message.Append("()");
+
+					// select block comment and toggle off to print stack trace
+	/*				string[] callStack = Vs.Debug.Code.SnippetFunctions.getCallStack();
+					_message.Append("\n");
+					_message.Append("STACK:");
+					for(int i = 0; i < callStack.Length; i++) {
+						_message.Append("\n\t[");
+						_message.Append(i);
+						_message.Append("]");
+						_message.Append(callStack[i]);
+					}
+	*/				
+					string debugString = _message.ToString();
+					Vs.Debug.Code.SnippetFunctions.OutputDebugString(debugString);	
+					
+					Vs.Debug.Code.SnippetFunctions.vsMessageBox(debugString.Replace('|', '\n').).Substring(12),"ATTACH_AND_DEBUG");					
+				}
+				#endif
+			]]>
+			</Code>		
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

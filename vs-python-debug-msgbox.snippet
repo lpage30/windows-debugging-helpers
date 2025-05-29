@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DebugPopMessageBox</Title>
+			<Description>ImosMessageBox() allowing you to attach and debug</Description>
+			<Shortcut>ImosDebugPrompt</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>			
+		</Header>
+		<Snippet>
+			<Code Language="Python">
+				<![CDATA[
+    if __debug__:
+        import ctypes
+        import sys
+		import datetime
+        ctypes.windll.kernel32.OutputDebugStringW("DEBUG_OUTPUT>{0} {1}:{2}|{3}()".format(
+			datetime.datetime.now().strftime("%T"),
+            __file__,
+            sys._getframe(1).f_lineno,
+            sys._getframe(1).f_code.co_name
+        ))
+        ctypes.windll.user32.MessageBoxW(None,"{0} {1}:{2}\n{3}()".format(
+			datetime.datetime.now().strftime("%T"),
+            __file__,
+            sys._getframe(1).f_lineno,
+            sys._getframe(1).f_code.co_name
+        ), "ATTACH_AND_DEBUG", 0)
+				]]>
+			</Code>		
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

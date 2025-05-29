@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DebugPopMessageBox</Title>
+			<Description>MessageBox() allowing you to attach and debug</Description>
+			<Shortcut>DebugPrompt</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>			
+		</Header>
+		<Snippet>
+			<Code Language="JavaScript">
+			<![CDATA[{
+				const callStack = (new Error()).stack.split('\n').filter((_frame,index) => index > 0).map(frame => frame.split('at ')[1]).reverse();
+				const currentFrameParts = callStack.slice(-1)[0].split(' ');
+				const fileLineParts = (currentFrameParts.length === 1 ? currentFrameParts[0] : currentFrameParts[1]).replace('(', '').replace(')','').split(':');
+				
+
+				const fileName = fileLineParts.length === 4 ? fileLineParts[0] + ':' + fileLineParts[1] : fileLineParts[0];
+				const lineNumber = fileLineParts.slice(-2)[0];
+				const functionName = currentFrameParts.length === 1 ? null : currentFrameParts[0];
+
+				const message = [
+					'DEBUG_OUTPUT>', 
+					(new Date()).toTimeString().split(' ')[0],
+					' ',
+					fileName, ':' , 
+					lineNumber, '|', 
+					...(functionName ? [functionName, '()'] : ['-']),
+					// '\nSTACK:', ...callStack.map((frame,i) => `\n\t[${i}] ${frame}`),
+				];
+				const debugString = message.join('');
+				console.error(debugString);
+				if(window) {
+					window.alert(debugString.replace('|', '\n').substr(13));
+				}
+			}
+			]]>
+			</Code>		
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

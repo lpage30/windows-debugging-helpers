@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DebugOutput</Title>
+			<Description>OutputDebugString() to see in DebugView.exe</Description>
+			<Shortcut>DebugMessage</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>						
+		</Header>
+		<Snippet>
+			<Code Language="CPP">
+				<![CDATA[#ifdef _DEBUG //pasted from vs-debug-output.snippet
+				{
+					#include <sstream>
+					#include <debugapi.h>
+					#include <time.h>
+					
+					auto utcTime = std::time(nullptr);
+					tm localTime;
+					char timeString[80];
+					if (localtime_s(&localTime, &utcTime) == 0) {
+						std::strftime(timeString, 80, "%T", &localTime);
+					}
+					else {
+						strcpy_s(timeString, "FAILED");
+					}
+					
+					string file = __FILE__;
+					int line = __LINE__;
+					string function = __FUNCTION__;
+					stringstream _message;
+
+					_message << "DEBUG_OUTPUT>" << timeString << " ";
+					_message << file;
+					_message << ":";
+					_message << line;
+					_message << "|";
+					_message << function;
+					_message << "()" << std::endl;
+					#if defined(HAS_GET_CALLSTACK_FUNCTION_VS_SNIPPET) 
+						_message << "STACK:";
+						std::vector<string> callStack = getCallStack();
+						for (size_t i = 0; i < callStack.size(); i++) {
+							_message << "\n\t[" << i << "]" << callStack[i];
+						}
+					#endif
+
+					string debugString = _message.str();
+					OutputDebugString(debugString.c_str());
+				}
+				#endif]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

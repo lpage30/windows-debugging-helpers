@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>DebugFunctions</Title>
+			<Description>Namespace (Vs.Debug.Snippet) and class (Functions) of static method: OutputDeubgString, ImosMessageBox, getFilenameLineFunctionForCaller, isVesApp, getCallStack</Description>
+			<Shortcut>DebugFunctions</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>			
+		</Header>
+		<Snippet>
+			<Code Language="CSharp">
+			<![CDATA[#if DEBUG //pasted from vs-debug-functions.snippet
+namespace Vs.Debug.Code {
+    using System.Runtime.InteropServices;
+
+    public class SnippetFunctions
+    {
+        [DllImport("kernel32.dll")]
+        static extern void OutputDebugStringW(byte[] byteUnicode);
+
+        [DllImport("user32.dll")]
+        static extern int MessageBoxW(IntPtr hWnd, byte[] unicodeText, byte[] unicodeCaption, uint type);
+        public static void OutputDebugString(string debugString, Action<string> writeLogEntry = null)
+        {
+            OutputDebugStringW(System.Text.Encoding.Unicode.GetBytes(debugString));
+        }
+
+        public static int VSMessageBox(string message, string title, uint boxType = 0)
+        {
+            return MessageBoxW(IntPtr.Zero, System.Text.Encoding.Unicode.GetBytes(message), System.Text.Encoding.Unicode.GetBytes(title), boxType);
+        }
+		public static (string File, int Line, string Function) getFilenameLineFunctionForCaller() {
+			System.Diagnostics.StackFrame callerFrame = (new System.Diagnostics.StackTrace(fNeedFileInfo: true)).GetFrames()[1];
+			return (
+				File: callerFrame.GetFileName(),
+				Line: callerFrame.GetFileLineNumber(),
+				Function: callerFrame.GetMethod().Name
+			);
+		}
+		
+		public static string[] getCallStack() {
+			string atPrefix = "   at ";
+			string[] splitStackTrace = System.Environment.StackTrace.Split(
+				new string[] {System.Environment.NewLine},
+				System.StringSplitOptions.RemoveEmptyEntries
+			);
+			// splitStackTrace is in this call -> initial call order
+			string[] callStack = new string[splitStackTrace.Length - 1];
+			// callstack is in initial -> call before this call order
+			int i = 1;
+			int j = callStack.Length - 1;
+			for(; i < splitStackTrace.Length; i++, j--) {
+				callStack[j] = splitStackTrace[i].StartsWith(atPrefix) ? splitStackTrace[i].Substring(atPrefix.Length) : splitStackTrace[i];
+			}
+			return callStack;
+		}	
+    }
+}
+#endif
+			]]>
+			</Code>			
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

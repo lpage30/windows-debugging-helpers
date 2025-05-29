@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>GetCallStackFunction</Title>
+			<Description>Defines HAS_GET_CALLSTACK_FUNCTION_VS_SNIPPET and std::vector&lt;string&gt; getCallStack() function definition.</Description>
+			<Shortcut>GetCallStack</Shortcut>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>						
+		</Header>
+		<Snippet>
+			<Code Language="CPP">
+				<![CDATA[#ifdef _DEBUG //pasted from vs-get-callstack-function.snippet
+// NOTE: this should only be placed outside of any scope (global scope only)
+#include <Windows.h>
+#include <DbgHelp.h>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <debugapi.h>
+#include <sstream>
+#pragma comment(lib, "dbghelp.lib")
+
+SYMBOL_INFO* atStartSymInitialize();
+void atExitSymCleanup();
+
+static SYMBOL_INFO* g_pSymbol = atStartSymInitialize();
+
+SYMBOL_INFO* atStartSymInitialize() {
+	try
+	{
+		SYMBOL_INFO* pSymbol = (SYMBOL_INFO*)malloc(sizeof(SYMBOL_INFO) + MAX_SYM_NAME + 1);
+		pSymbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+		pSymbol->MaxNameLen = MAX_SYM_NAME;
+		SymInitialize(GetCurrentProcess(), NULL, TRUE);
+		std::atexit(atExitSymCleanup);
+		return pSymbol;
+	}
+	catch(...)
+	{
+		stringstream _message;
+		_message << "EXCEPTION: ";
+		_message << __FILE__;
+		_message << ":";
+		_message << __LINE__;
+		_message << "|";
+		_message << __FUNCTION__;
+		_message << "| returning NULL SYMBOL_INFO";
+		OutputDebugString(_message.str().c_str());
+		return NULL;
+	}
+}
+
+void atExitSymCleanup() {
+	try
+	{
+		SymCleanup(GetCurrentProcess());
+		if (NULL != g_pSymbol)
+			free(g_pSymbol);
+		g_pSymbol = NULL;
+	}
+	catch(...)
+	{
+		stringstream _message;
+		_message << "EXCEPTION: ";
+		_message << __FILE__;
+		_message << ":";
+		_message << __LINE__;
+		_message << "|";
+		_message << __FUNCTION__;
+		OutputDebugString(_message.str().c_str());
+		return;
+	}
+
+}
+
+std::vector<string> getCallStack() {
+	std::vector<string> callStack;
+	if (NULL == g_pSymbol)
+		return callStack;
+	try
+	{
+		HANDLE hProcess = GetCurrentProcess();
+		HANDLE hThread = GetCurrentThread();
+		CONTEXT context = {};
+		context.ContextFlags = CONTEXT_FULL;
+
+		RtlCaptureContext(&context);
+
+		STACKFRAME64 stackFrame = {};
+		stackFrame.AddrPC.Offset = context.Eip;
+		stackFrame.AddrPC.Mode = AddrModeFlat;
+		stackFrame.AddrFrame.Offset = context.Ebp;
+		stackFrame.AddrFrame.Mode = AddrModeFlat;
+		stackFrame.AddrStack.Offset = context.Esp;
+		stackFrame.AddrStack.Mode = AddrModeFlat;
+
+		while (StackWalk64(IMAGE_FILE_MACHINE_I386, hProcess, hThread, &stackFrame, &context, NULL, SymFunctionTableAccess64, SymGetModuleBase64, NULL)) {
+			if (stackFrame.AddrPC.Offset == 0)
+				break;
+			BOOL result = SymFromAddr(hProcess, stackFrame.AddrPC.Offset, 0, g_pSymbol);
+
+			callStack.push_back(string(result == TRUE ? g_pSymbol->Name : "-unknown-"));
+		}
+		std::reverse(callStack.begin(), callStack.end());
+		return callStack;
+	}
+	catch(...)
+	{
+		stringstream _message;
+		_message << "EXCEPTION: ";
+		_message << __FILE__;
+		_message << ":";
+		_message << __LINE__;
+		_message << "|";
+		_message << __FUNCTION__;
+		OutputDebugString(_message.str().c_str());
+		return callStack;
+	}
+}
+
+#define HAS_GET_CALLSTACK_FUNCTION_VS_SNIPPET 1			
+#endif
+				]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
