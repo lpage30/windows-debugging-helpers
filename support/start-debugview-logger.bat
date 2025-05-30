@@ -1,5 +1,5 @@
 @echo off
 call %~dp0.\stop-debugview-logger.bat
 echo "starting debugview and following of logs to debugview"
-start "DebugView logger %~1" /MIN /D %~dp0. %comspec% /C debugview-logger.bat %1
+start "DebugView logger " /MIN /D %~dp0. %comspec% /C debugview-logger.bat
 start "" /MIN /D %~dp0.. %comspec% /C follow-logs-to-debugview.bat %1
