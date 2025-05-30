@@ -33,7 +33,7 @@ GOTO :EOF
 call %~dp0.\support\logging-vars.bat %1
 title Process Logger: %SESSION_DATE_TIME_STRING%
 echo "START(%time%) session %SESSION_DATE_TIME_STRING%" > %PROCESS_LOGGER_LOG%
-call %ON_MONITORED_PROCESSES_CALL_BATCHFILE_BAT% "%~2" "%~dp0.\support\log-debugview.bat" "%~dp0.\support\start-debugview-logger.bat" "%~dp0.\support\stop-debugview-logger.bat" "%SESSION_DATE_TIME_STRING%" | tee -a %PROCESS_LOGGER_LOG%
+call %ON_MONITORED_PROCESSES_CALL_BATCHFILE_BAT% "%~2" "%~dp0.\support\log-debugview.bat" "%~dp0.\support\start-debugview-logger.bat %1" "%~dp0.\support\stop-debugview-logger.bat" "%SESSION_DATE_TIME_STRING%" | tee -a %PROCESS_LOGGER_LOG%
 title %CD%
 
 endlocal

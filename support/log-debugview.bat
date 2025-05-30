@@ -9,7 +9,7 @@ IF "%3" == "" (
 set PID=%~2
 set name=%~3
 
-call %SCRIPT_DIR%\debugging-vars.bat %1
+call %SCRIPT_DIR%\debugging-vars.bat
 
 set logfile_suffix=%date_time_suffix%.txt
 

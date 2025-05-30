@@ -1,11 +1,10 @@
 @echo off
-IF NOT DEFINED SESSION_DATE_TIME_STRING (
+set now_date=%date:~10,4%_%date:~4,2%_%date:~7,2%
 set now_time=%time::=_%
 set now_time=%now_time:.=_%
 set now_time=%now_time: =0%
 
-set SESSION_DATE_TIME_STRING=%date:~10,4%_%date:~4,2%_%date:~7,2%.%now_time%
-)
+set SESSION_DATE_TIME_STRING=%now_date%.%now_time%
 
 set debug_log_dir=%LOCALAPPDATA%\logs\debug\session_%SESSION_DATE_TIME_STRING%
 IF NOT EXIST "%debug_log_dir%" (
