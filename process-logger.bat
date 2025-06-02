@@ -7,10 +7,6 @@ IF NOT EXIST %1 (
     echo "%1 does not exist"
     GOTO :HELP
 )
-IF NOT EXIST %2 (
-    echo "%2 does not exist"
-    GOTO :HELP
-)
 IF "%ON_MONITORED_PROCESSES_CALL_BATCHFILE_BAT%" == "" (
     echo "%0 requires use of on-monitored-processes-call-batchfile.bat script; path held in global variable: ON_MONITORED_PROCESSES_CALL_BATCHFILE_BAT"
     echo "This variable is missing."
@@ -23,7 +19,7 @@ IF NOT EXIST %ON_MONITORED_PROCESSES_CALL_BATCHFILE_BAT% (
 )
 GOTO :START
 :HELP
-echo "USAGE: %0 <logtitle-logfile-list-batchfile> <code-source-root-directory>"
+echo "USAGE: %0 <logtitle-logfile-list-batchfile> <code-source-root-directory> or filter condition"
 echo "sets up logfile following to debugview and process monitoring"
 echo "%0 requires use of on-monitored-processes-call-batchfile.bat script; path held in global variable: ON_MONITORED_PROCESSES_CALL_BATCHFILE_BAT"
 echo "This variable or script is missing."
