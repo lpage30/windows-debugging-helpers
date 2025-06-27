@@ -2,16 +2,16 @@
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
 	<CodeSnippet Format="1.0.0">
 		<Header>
-			<Title>DebugOutput</Title>
-			<Description>OutputDebugString() to see in DebugView.exe</Description>
-			<Shortcut>DebugMessage</Shortcut>
+			<Title>DebugOutputArgcArgv</Title>
+			<Description>OutputDebugString() to see in DebugView.exe. use in functions taking int argc, const char* argv</Description>
+			<Shortcut>DebugOutputArgcArgv</Shortcut>
 			<SnippetTypes>
 				<SnippetType>Expansion</SnippetType>
 			</SnippetTypes>						
 		</Header>
 		<Snippet>
 			<Code Language="CPP">
-				<![CDATA[#ifdef _DEBUG //pasted from vs-c++-debug-output.snippet
+				<![CDATA[#ifdef _DEBUG //pasted from vs-c++-debug-output-arc-argv.snippet
 				{
 					#include <sstream>
 					#include <debugapi.h>
@@ -38,7 +38,11 @@
 					_message << line;
 					_message << "|";
 					_message << function;
-					_message << "()" << std::endl;
+					_message << "(";
+					for(int i = 0; i < argc; i++) {
+						_message << (0 == i ? "" : ", ") << "[" << i << "](" << argv[i] << ")";
+					}
+					_message << ")" << std::endl;
 					#if defined(HAS_GET_CALLSTACK_FUNCTION_VS_SNIPPET) 
 						_message << "STACK:";
 						std::vector<string> callStack = getCallStack();
